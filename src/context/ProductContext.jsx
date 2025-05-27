@@ -20,7 +20,7 @@ export const ProductProvider = ({ children }) => {
     }
   }
 
-    const getProductById = async (id) => {
+  const getProductById = async (id) => {
     try {
       const res = await axios.get(`${BASE_URL}/${id}`)
       return res.data.data
@@ -38,15 +38,15 @@ export const ProductProvider = ({ children }) => {
       console.error('Error al crear producto', error)
     }
   }
-
-    const updateProduct = async (id, updatedData) => {
+  const updateProduct = async (id, updatedData) => {
     try {
-      await axios.put(`${BASE_URL}/${id}`, updatedData)
-      setProducts(products.map(p => (p.id === id ? { ...p, ...updatedData } : p)))
+      await axios.put(`${BASE_URL}/${id}`, updatedData);
+      await fetchProducts() //refrescar la lista actualizada
     } catch (error) {
-      console.error('Error al actualizar producto', error)
+      console.error('Error al actualizar producto', error);
     }
-  }
+  };
+
 
   const deleteProduct = async (id) => {
     try {

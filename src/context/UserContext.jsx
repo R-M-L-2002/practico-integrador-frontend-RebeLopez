@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from 'react'
+import { createContext, useState, useEffect, useContext } from 'react'
 import axios from 'axios'
 
 export const UserContext = createContext()
@@ -31,22 +31,30 @@ export const UserProvider = ({ children }) => {
   }
 
   const createUser = async (user) => {
-    const res = await axios.post(BASE_URL, user)
-    setUsers([...users, res.data.data])
-  }
-
-    const updateUser = async (id, updatedData) => {
     try {
-      await axios.put(`${BASE_URL}/${id}`, updatedData)
-      setUsers(users.map(u => (u.id === id ? { ...u, ...updatedData } : u)))
+      const res = await axios.post(BASE_URL, user)
+      setUsers([...users, res.data.data])
     } catch (error) {
-      console.error('Error al actualizar usuario', error)
+      console.error('Error al crear el usuario', error)
     }
   }
 
+  const updateUser = async (id, updatedData) => {
+    try {
+      await axios.put(`${BASE_URL}/${id}`, updatedData);
+      await fetchUsers() //refrescar la lista actualizada
+    } catch (error) {
+      console.error('Error al actualizar el usuario', error);
+    }
+  };
+
   const deleteUser = async (id) => {
-    await axios.delete(`${BASE_URL}/${id}`)
-    setUsers(users.filter(u => u.id !== id))
+    try {
+      await axios.delete(`${BASE_URL}/${id}`)
+      setUsers(users.filter(u => u.id !== id))
+    } catch (error){
+      console.error('Error al eliminar el usuario', error)
+    }
   }
 
   useEffect(() => {
@@ -67,3 +75,5 @@ export const UserProvider = ({ children }) => {
     </UserContext.Provider>
   )
 }
+
+export const useUsers = () => useContext(UserContext);
