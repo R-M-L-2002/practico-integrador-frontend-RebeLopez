@@ -7,14 +7,14 @@ import * as Yup from "yup";
 const ProductForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { getProductById, createProduct, updateProduct } = useProducts()
+  const { getProductById, createProduct, updateProduct } = useProducts();
 
   const [initialValues, setInitialValues] = useState({
-    name: "",
-    price: ''
-  })
+    nombre: "",
+    precio: ""
+  });
 
-  const [successMessage, setSuccessMessage] = useState("")
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     if (id) {
@@ -22,20 +22,20 @@ const ProductForm = () => {
         .then((foundProduct) => {
           if (foundProduct) {
             setInitialValues({
-              name: foundProduct.name,
-              price: foundProduct.price
-            })
+              nombre: foundProduct.nombre,
+              precio: foundProduct.precio
+            });
           }
         })
         .catch((error) => {
-          console.error("Error al obtener producto", error)
-        })
+          console.error("Error al obtener producto", error);
+        });
     }
-  }, [id, getProductById])
+  }, [id, getProductById]);
 
   const validationSchema = Yup.object({
-    name: Yup.string().required('El nombre del producto es obligatorio'),
-    price: Yup.number()
+    nombre: Yup.string().required('El nombre del producto es obligatorio'),
+    precio: Yup.number()
       .typeError('Debe ser un número')
       .positive('El precio debe ser mayor a 0')
       .required('El precio es obligatorio')
@@ -44,31 +44,31 @@ const ProductForm = () => {
   const handleSubmit = (values, { setSubmitting }) => {
     const dataToSend = {
       ...values,
-      price: parseFloat(values.price)
+      precio: parseFloat(values.precio)
     };
 
     if (id) {
       updateProduct(id, dataToSend)
         .then(() => {
-          setSuccessMessage("Producto actualizado exitosamente")
-          setSubmitting(false)
-          setTimeout(() => navigate('/productos'), 1500)
+          setSuccessMessage("Producto actualizado exitosamente");
+          setSubmitting(false);
+          setTimeout(() => navigate('/productos'), 1500);
         })
         .catch(() => {
-          setSubmitting(false)
+          setSubmitting(false);
         });
     } else {
       createProduct(dataToSend)
         .then(() => {
-          setSuccessMessage("Producto creado exitosamente")
-          setSubmitting(false)
-          setTimeout(() => navigate('/productos'), 1500)
+          setSuccessMessage("Producto creado exitosamente");
+          setSubmitting(false);
+          setTimeout(() => navigate('/productos'), 1500);
         })
         .catch(() => {
-          setSubmitting(false)
-        })
+          setSubmitting(false);
+        });
     }
-  }
+  };
 
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md mt-10">
@@ -89,27 +89,27 @@ const ProductForm = () => {
         {({ isSubmitting }) => (
           <Form>
             <div className="mb-4">
-              <label htmlFor="name" className="block text-gray-700 font-medium mb-1">Nombre</label>
+              <label htmlFor="nombre" className="block text-gray-700 font-medium mb-1">Nombre</label>
               <Field
-                id="name"
-                name="name"
+                id="nombre"
+                name="nombre"
                 type="text"
                 className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 placeholder="Producto"
               />
-              <ErrorMessage name="name" component="div" className="text-red-600 text-sm mt-1" />
+              <ErrorMessage name="nombre" component="div" className="text-red-600 text-sm mt-1" />
             </div>
 
             <div className="mb-4">
-              <label htmlFor="price" className="block text-gray-700 font-medium mb-1">Precio</label>
+              <label htmlFor="precio" className="block text-gray-700 font-medium mb-1">Precio</label>
               <Field
-                id="price"
-                name="price"
+                id="precio"
+                name="precio"
                 type="text"
                 className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 placeholder="$"
               />
-              <ErrorMessage name="price" component="div" className="text-red-600 text-sm mt-1" />
+              <ErrorMessage name="precio" component="div" className="text-red-600 text-sm mt-1" />
             </div>
 
             <div className="flex justify-between items-center">
@@ -134,7 +134,7 @@ const ProductForm = () => {
         )}
       </Formik>
     </div>
-  )
-}
+  );
+};
 
-export default ProductForm
+export default ProductForm;
