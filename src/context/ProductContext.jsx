@@ -9,10 +9,11 @@ export const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
 
+  // Obtener todos los productos
   const fetchProducts = async () => {
     try {
       const res = await axios.get(BASE_URL)
-      setProducts(res.data.data)
+      setProducts(res.data.data || []) // por si viene undefined
     } catch (error) {
       console.error('Error al obtener productos', error)
     } finally {
@@ -20,6 +21,7 @@ export const ProductProvider = ({ children }) => {
     }
   }
 
+  // Obtener producto por ID
   const getProductById = async (id) => {
     try {
       const res = await axios.get(`${BASE_URL}/${id}`)
@@ -30,24 +32,50 @@ export const ProductProvider = ({ children }) => {
     }
   }
 
+  // Crear producto
   const createProduct = async (product) => {
     try {
-      const res = await axios.post(BASE_URL, product)
+      // Validar campos antes de enviar
+      if (!product.nombre || product.precio === undefined || product.precio === null) {
+        console.error('Faltan datos obligatorios para crear producto')
+        return
+      }
+
+      // Asegurarse que precio sea numero
+      const payload = {
+        nombre: product.nombre,
+        precio: parseFloat(product.precio)
+      }
+
+      const res = await axios.post(BASE_URL, payload, {
+        headers: { 'Content-Type': 'application/json' }
+      })
+
       setProducts([...products, res.data.data])
     } catch (error) {
-      console.error('Error al crear producto', error)
+      console.error('Error al crear producto', error.response?.data || error.message)
     }
   }
+
+  // Actualizar producto
   const updateProduct = async (id, updatedData) => {
     try {
-      await axios.put(`${BASE_URL}/${id}`, updatedData);
-      await fetchProducts() //refrescar la lista actualizada
+      const payload = {
+        nombre: updatedData.nombre,
+        precio: parseFloat(updatedData.precio)
+      }
+
+      await axios.put(`${BASE_URL}/${id}`, payload, {
+        headers: { 'Content-Type': 'application/json' }
+      })
+
+      await fetchProducts() // refrescar lista
     } catch (error) {
-      console.error('Error al actualizar producto', error);
+      console.error('Error al actualizar producto', error.response?.data || error.message)
     }
-  };
+  }
 
-
+  // Eliminar producto
   const deleteProduct = async (id) => {
     try {
       await axios.delete(`${BASE_URL}/${id}`)
@@ -63,17 +91,18 @@ export const ProductProvider = ({ children }) => {
 
   return (
     <ProductContext.Provider 
-    value={{ 
+      value={{ 
         products, 
         loading, 
         getProductById,
         createProduct, 
         updateProduct,
         deleteProduct
-         }}>
+      }}
+    >
       {children}
     </ProductContext.Provider>
   )
 }
 
-export const useProducts = () => useContext(ProductContext);
+export const useProducts = () => useContext(ProductContext)

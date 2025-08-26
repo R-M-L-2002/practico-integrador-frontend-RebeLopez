@@ -24,7 +24,7 @@ const exportToPDF = (title, data, columns) => {
   doc.setFillColor("#C8A2C8"); 
   doc.rect(marginLeft, y, totalWidth, rowHeight, 'F');
 
-  const tableTopY = y; 
+  let tableTopY = y; 
 
   doc.setFontSize(14);
   doc.setTextColor("#3B007A");
